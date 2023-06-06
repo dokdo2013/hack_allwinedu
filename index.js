@@ -20,7 +20,7 @@
  * 2. 코드 실행을 멈추려면 콘솔을 새로고침하면 됩니다.
  * 3. 강의를 수강하면서 다른 작업을 하면 안됩니다. (콘솔을 닫으면 안됩니다.)
  * 4. 만일 스크립트로 실행하려면 쿠키값을 직접 넣어줘야합니다. (user_session)
- * 4-1. 쿠키값은 로그인 후 개발자 도구(F12) Script 탭에 들어가서 document.cookie.match(/ASPSESSIONIDQWWQASCD=([^;]*)/)[1] 를 실행하면 나옵니다.
+ * 4-1. 쿠키값은 로그인 후 개발자 도구(F12) Script 탭에 들어가서 document.cookie.split('; ').find((s)=>s.includes('ASPSESSIONID')) 를 실행하면 나옵니다.
  */
 
 const user_id = ""; // 로그인한 ID (이름+생일) ex. 홍길동0123
@@ -48,12 +48,14 @@ const lecture_items = [
   },
 ];
 
-const user_session = document.cookie.match(/ASPSESSIONIDQWWQASCD=([^;]*)/)[1]; // 로그인한 세션 (스크립트로 실행하려면 쿠키값을 직접 넣어줘야함)
+const user_session = document.cookie
+  .split("; ")
+  .find((s) => s.includes("ASPSESSIONID")); // 로그인한 세션 (스크립트로 실행하려면 쿠키값을 직접 넣어줘야함)
 
 // 진도 기록
 const action = async (session, lecture) => {
   const myHeaders = new Headers();
-  myHeaders.append("Cookie", `ASPSESSIONIDQWWQASCD=${session}`);
+  myHeaders.append("Cookie", session);
   myHeaders.append(
     "Referer",
     `https://allwinedu.net/view/my_study/study.asp?idx=${lecture.id}&chapter=1`
@@ -91,7 +93,7 @@ const action = async (session, lecture) => {
 // 강의 init
 const init = async (session, lecture, entry_id) => {
   const myHeaders = new Headers();
-  myHeaders.append("Cookie", `ASPSESSIONIDQWWQASCD=${session}`);
+  myHeaders.append("Cookie", session);
   myHeaders.append(
     "Referer",
     `https://allwinedu.net/view/my_study/study.asp?idx=${lecture.id}&chapter=1`
